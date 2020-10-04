@@ -1,0 +1,33 @@
+version: '3.1'
+services:
+    nginx:
+        image: nginx:latest
+        container_name: nginx_reverse_proxy
+        depends_on: 
+            - cs3219_taska
+        volumes:
+            - ./nginx.conf:/etc/nginx/conf.d/default.conf
+        networks:
+            - docker-network
+        ports:
+            - 80:80
+    cs3219_taska:
+        build:
+            context: ./
+            dockerfile: Dockerfile
+        image: robytanama/cs3219_taska
+        container_name: cs3219_taska
+        volumes:
+            - ./:/app/
+        environment:
+            - FLASK_APP=./app.py
+        command : python /app/app.py
+        networks:
+            docker-network:
+                aliases:
+                    - cs3219_taska
+        ports:
+            - 8888:5000
+
+networks:
+    docker-network:
